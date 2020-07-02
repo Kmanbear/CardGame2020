@@ -21,13 +21,14 @@ screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 pygame.display.set_caption('Card Game')
 
 class Game:
-    def __init__(self, store, stage, inventory, bank):
+    def __init__(self, store, stage, inventory, bank, turnCounter):
         self.allCardObjects = (store, stage, inventory)
         self.store = store
         self.stage = stage
         self.inventory = inventory
         self.firstSelection = None
         self.bank = bank
+        self.turnCounter = turnCounter
 
     def clearAllHighlights(self):
         for cardObject in self.allCardObjects:
@@ -118,23 +119,7 @@ class Stage(Inventory):
             if card.rank != None:
                 sumOfStrength += card.rank
         print(sumOfStrength)
-
-# class TurnCounter(Button):
-#   def __init__(self):
-#       self.text = "Next Turn"
-#       self.phases = ["Set-up", "Battle"]
-
-#   def show(self):
-#       createBox(WINDOWWIDTH *.75 - 230*.5, 0, 230, 50, self.text)
-    
-# class RerollStore(Button):
-#   def __init__(self):
-#       self.text = "Reroll Store"
-#       self.cost = 1
-
-#   def show(self):
-#       createBox(WINDOWWIDTH *.25 - 230*.5, 0, 230, 50, self.text)
-    
+  
 class Card:
 
     RANKS = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
@@ -203,6 +188,12 @@ class Bank(Button):
         self.money = 100
         self.interest = 5
         self.text = "Bank: " + str(self.money) + " dollars!"
+
+class TurnCounter(Button):
+    def __init__(self, x, y, width, height):
+        super().__init__(x, y, width, height)
+        self.text = "Next Turn"
+        self.phases = ["Set-up", "Battle"]
     
 def main():
     run = True
@@ -215,7 +206,8 @@ def main():
     store.refresh()
     stage = Stage(deck, 160, 3)
     inventory = Inventory(deck, 260, 3)
-    game = Game(store, stage, inventory, bank)
+    turnCounter = TurnCounter(WINDOWWIDTH *.75 - 230*.5, 0, 230, 50)
+    game = Game(store, stage, inventory, bank, turnCounter)
     
     #variables to track mouse position
     mousex = 0
@@ -228,6 +220,7 @@ def main():
         stage.show()
         inventory.show()
         bank.show()
+        turnCounter.show()
 
         #inputs
         mouseClicked = False
@@ -259,7 +252,3 @@ def main():
         pygame.display.update()
 
 main()
-
-
-
-
