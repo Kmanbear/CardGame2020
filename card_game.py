@@ -21,42 +21,43 @@ screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 pygame.display.set_caption('Card Game')
 
 class Game:
-	def __init__(self, store, stage, inventory, bank):
-		self.allCardObjects = (store, stage, inventory)
-		self.store = store
-		self.stage = stage
-		self.inventory = inventory
-		self.firstSelection = None
-		self.bank = bank
+    def __init__(self, store, stage, inventory, bank, turnCounter):
+        self.allCardObjects = (store, stage, inventory)
+        self.store = store
+        self.stage = stage
+        self.inventory = inventory
+        self.firstSelection = None
+        self.bank = bank
+        self.turnCounter = turnCounter
 
-	def clearAllHighlights(self):
-		for cardObject in self.allCardObjects:
-			for card in cardObject.cards:
-				card.color = BLACK
+    def clearAllHighlights(self):
+        for cardObject in self.allCardObjects:
+            for card in cardObject.cards:
+                card.color = BLACK
 
-	def resetClicks(self):
-		self.firstSelection = None
-		self.clearAllHighlights()
+    def resetClicks(self):
+        self.firstSelection = None
+        self.clearAllHighlights()
 
-	def firstClick(self, clickedTuple):
-		self.firstSelection = clickedTuple
-		clickedTuple[2].color = BLUE
-		
-	def swapCards(self, secondCard):
-		object1 = self.firstSelection[0]
-		object2 = secondCard[0]
-		index1 = self.firstSelection[1]
-		index2 = secondCard[1]
-		card1 = self.firstSelection[2]
-		card2 = secondCard[2]
+    def firstClick(self, clickedTuple):
+        self.firstSelection = clickedTuple
+        clickedTuple[2].color = BLUE
+        
+    def swapCards(self, secondCard):
+        object1 = self.firstSelection[0]
+        object2 = secondCard[0]
+        index1 = self.firstSelection[1]
+        index2 = secondCard[1]
+        card1 = self.firstSelection[2]
+        card2 = secondCard[2]
 
-		if object2 == self.store: #if store receives a card, it does nothing
-			self.resetClicks() 
-		elif object1 == self.store and (object2 == self.stage or object2 == self.inventory): #handles buying from store
-			if self.store.checkTransaction(card1, card2, self.bank):
-				object1.cards[index1], object2.cards[index2] = object2.cards[index2], object1.cards[index1]
-		else: #handles reordering stage or inventory
-			object1.cards[index1], object2.cards[index2] = object2.cards[index2], object1.cards[index1]
+        if object2 == self.store: #if store receives a card, it does nothing
+            self.resetClicks() 
+        elif object1 == self.store and (object2 == self.stage or object2 == self.inventory): #handles buying from store
+            if self.store.checkTransaction(card1, card2, self.bank):
+                object1.cards[index1], object2.cards[index2] = object2.cards[index2], object1.cards[index1]
+        else: #handles reordering stage or inventory
+            object1.cards[index1], object2.cards[index2] = object2.cards[index2], object1.cards[index1]
 
 class Board:
 
@@ -112,6 +113,13 @@ class Stage(Inventory):
 	def __init__(self, deck, top, columns):
 		super().__init__(deck, top, columns)
 
+    def battle(self):
+        sumOfStrength = 0
+        for card in self.cards:
+            if card.rank != None:
+                sumOfStrength += card.rank
+        print(sumOfStrength)
+  
 	def battle(self):
 		sumOfStrength = 0
 		for card in self.cards:
@@ -119,14 +127,6 @@ class Stage(Inventory):
 				sumOfStrength += card.rank
 		print(sumOfStrength)
 
-# class TurnCounter(Button):
-# 	def __init__(self):
-# 		self.text = "Next Turn"
-# 		self.phases = ["Set-up", "Battle"]
-
-# 	def show(self):
-# 		createBox(WINDOWWIDTH *.75 - 230*.5, 0, 230, 50, self.text)
-	
 class Card:
 
 	RANKS = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
@@ -189,17 +189,23 @@ class Button():
 		screen.blit(text, text_rect.center)
 
 class Bank(Button):
-	def __init__(self, x, y, width, height):
-		super().__init__(x, y, width, height)
-		self.money = 100
-		self.interest = 5
-		self.text = "Bank: " + str(self.money) + " dollars!"
+    def __init__(self, x, y, width, height):
+        super().__init__(x, y, width, height)
+        self.money = 100
+        self.interest = 5
+        self.text = "Bank: " + str(self.money) + " dollars!"
+
+class TurnCounter(Button):
+    def __init__(self, x, y, width, height):
+        super().__init__(x, y, width, height)
+        self.text = "Next Turn"
+        self.phases = ["Set-up", "Battle"]
 
 class RerollStore(Button):
-	def __init__(self, x, y, width, height):
-		super().__init__(x, y, width, height)
-		self.text = "Reroll Store"
-		self.cost = 1
+    def __init__(self, x, y, width, height):
+        super().__init__(x, y, width, height)
+        self.text = "Reroll Store"
+        self.cost = 1
 	
 def main():
 	run = True
@@ -258,5 +264,3 @@ def main():
 		pygame.display.update()
 
 main()
-
-
