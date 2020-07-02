@@ -119,13 +119,6 @@ class Stage(Inventory):
             if card.rank != None:
                 sumOfStrength += card.rank
         print(sumOfStrength)
-  
-	def battle(self):
-		sumOfStrength = 0
-		for card in self.cards:
-			if card.rank != None:
-				sumOfStrength += card.rank
-		print(sumOfStrength)
 
 class Card:
 
@@ -214,12 +207,13 @@ def main():
 	deck.shuffle()
 	bank = Bank(WINDOWWIDTH *.5 - 230*.5, 0, 230, 50)
 	rerollStore = RerollStore(WINDOWWIDTH *.25 - 230*.5, 0, 230, 50)
+	turnConter = TurnCounter(WINDOWWIDTH * .75 - 230*0.5, 0, 230, 50)
 	board = Board(deck, None, None)
 	store = Store(deck, 60, 4)
 	store.refresh()
 	stage = Stage(deck, 160, 3)
 	inventory = Inventory(deck, 260, 3)
-	game = Game(store, stage, inventory, bank)
+	game = Game(store, stage, inventory, bank, rerollStore, turnCounter)
 	
 	#variables to track mouse position
 	mousex = 0
@@ -233,6 +227,7 @@ def main():
 		inventory.show()
 		bank.show()
 		rerollStore.show()
+		turnCounter.show()
 
 		#inputs
 		mouseClicked = False
